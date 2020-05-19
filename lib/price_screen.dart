@@ -1,4 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'coin_data.dart';
+import 'dart:io' show Platform;
 
 class PriceScreen extends StatefulWidget {
   @override
@@ -6,6 +9,51 @@ class PriceScreen extends StatefulWidget {
 }
 
 class _PriceScreenState extends State<PriceScreen> {
+  String selectedCurrency = "USD";
+
+  DropdownButton<String> getDropDown() {
+    List<DropdownMenuItem<String>> itemDropDown = [];
+
+    for (String currency in currenciesList) {
+      var itemWidget = DropdownMenuItem(
+        child: Text(currency),
+        value: currency,
+      );
+      itemDropDown.add(itemWidget);
+    }
+
+    return DropdownButton<String>(
+        value: selectedCurrency,
+        items: itemDropDown,
+        onChanged: (value) {
+          print(value);
+          setState(() {
+            selectedCurrency = value;
+          });
+        });
+  }
+
+  CupertinoPicker getIosPicker() {
+   List<Text> pickerItems = [];
+   for (String currency in currenciesList) {
+     var items = Text(currency);
+     pickerItems.add(items);
+   }
+   return CupertinoPicker(
+       itemExtent: 45,
+       onSelectedItemChanged: (selectedIndex) {
+         print(selectedIndex);
+       },
+       children: pickerItems
+   );
+ }
+
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,10 +90,28 @@ class _PriceScreenState extends State<PriceScreen> {
             alignment: Alignment.center,
             padding: EdgeInsets.only(bottom: 30.0),
             color: Colors.lightBlue,
-            child: null,
+            child: (Platform.isIOS) ? getIosPicker() : getDropDown(),
           ),
         ],
       ),
     );
   }
 }
+
+//DropdownButton<String>(
+//value: selectedCurrency,
+//items: thisFunction(),
+//onChanged: (value) {
+//print(value);
+//setState(() {
+//selectedCurrency = value;
+//});
+//})
+
+
+//CupertinoPicker(
+//itemExtent: 45,
+//onSelectedItemChanged: (selectedIndex) {
+//print(selectedIndex);
+//},
+//children: getPicker())
