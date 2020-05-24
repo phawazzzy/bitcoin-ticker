@@ -10,6 +10,12 @@ class PriceScreen extends StatefulWidget {
 
 class _PriceScreenState extends State<PriceScreen> {
   String selectedCurrency = "USD";
+  double rate = 0;
+  double ethrate = 0;
+  double ltcrate = 0;
+
+  CoinData coinData = CoinData();
+
 
   DropdownButton<String> getDropDown() {
     List<DropdownMenuItem<String>> itemDropDown = [];
@@ -29,6 +35,7 @@ class _PriceScreenState extends State<PriceScreen> {
           print(value);
           setState(() {
             selectedCurrency = value;
+            getCoinRate();
           });
         });
   }
@@ -43,14 +50,38 @@ class _PriceScreenState extends State<PriceScreen> {
        itemExtent: 45,
        onSelectedItemChanged: (selectedIndex) {
          print(selectedIndex);
+         setState(() {
+           selectedCurrency = currenciesList[selectedIndex];
+           getCoinRate();
+         });
        },
        children: pickerItems
    );
  }
 
+  Future getCoinRate() async{
+    try{
+      var coinRate = await coinData.getCoinData(selectedCurrency);
+      var coinRate2 = await coinData.getCoinData2(selectedCurrency);
+      var coinRate3 = await coinData.getCoinData3(selectedCurrency);
+
+
+      print(coinRate['rate']);
+      setState(() {
+        rate = coinRate['rate'];
+        ethrate = coinRate2['rate'];
+        ltcrate = coinRate3['rate'];
+      });
+    }catch(e){
+      print(e);
+    }
+
+  }
+
 
   @override
   void initState() {
+    getCoinRate();
     super.initState();
   }
 
@@ -62,29 +93,76 @@ class _PriceScreenState extends State<PriceScreen> {
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+//        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Padding(
-            padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
-            child: Card(
-              color: Colors.lightBlueAccent,
-              elevation: 5.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
-                child: Text(
-                  '1 BTC = ? USD',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.white,
+          Column(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
+                child: Card(
+                  color: Colors.lightBlueAccent,
+                  elevation: 5.0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
+                    child: Text(
+                      '1 BTC = $rate $selectedCurrency',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
+                child: Card(
+                  color: Colors.lightBlueAccent,
+                  elevation: 5.0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
+                    child: Text(
+                      '1 ETH = $ethrate $selectedCurrency',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
+                child: Card(
+                  color: Colors.lightBlueAccent,
+                  elevation: 5.0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
+                    child: Text(
+                      '1 LTC = $ltcrate $selectedCurrency',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
+
           Container(
             height: 150.0,
             alignment: Alignment.center,
@@ -97,21 +175,3 @@ class _PriceScreenState extends State<PriceScreen> {
     );
   }
 }
-
-//DropdownButton<String>(
-//value: selectedCurrency,
-//items: thisFunction(),
-//onChanged: (value) {
-//print(value);
-//setState(() {
-//selectedCurrency = value;
-//});
-//})
-
-
-//CupertinoPicker(
-//itemExtent: 45,
-//onSelectedItemChanged: (selectedIndex) {
-//print(selectedIndex);
-//},
-//children: getPicker())
